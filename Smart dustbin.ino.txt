@@ -1,0 +1,44 @@
+#include <Servo.h>
+
+#define TRIG_PIN PA1
+#define ECHO_PIN PA2
+#define SERVO_PIN PA0
+
+Servo myServo;
+
+long duration;
+int distance;
+
+void setup() {
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+
+  myServo.attach(SERVO_PIN);
+  myServo.write(0); // door closed
+}
+
+int getDistance() {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = duration * 0.034 / 2;
+
+  return distance;
+}
+
+void loop() {
+  distance = getDistance();
+
+  if (distance < 20) {
+    myServo.write(90);  // open door
+    delay(3000);
+    myServo.write(0);   // close door
+  }
+
+  delay(200);
+}
